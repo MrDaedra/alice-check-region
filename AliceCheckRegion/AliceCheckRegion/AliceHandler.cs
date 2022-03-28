@@ -30,7 +30,7 @@ namespace AliceCheckRegion
                 if (regionName != null)
                 {
                     response = new AliceResponse(aliceRequest, $"Регион {region} - это {regionName}");
-                    response.Response.EndSession = true;
+                    response.Response.EndSession = aliceRequest.Session.MessageId == 0;
                 }
                 else
                 {
@@ -41,12 +41,32 @@ namespace AliceCheckRegion
                         ? new AliceResponse(aliceRequest, $"Я не знаю точно, но думаю, что {region} - это {regionName}")
                         : new AliceResponse(aliceRequest, $"Я думаю, что региона с таким кодом не существует");
 
-                    response.Response.EndSession = true;
+                    response.Response.EndSession = aliceRequest.Session.MessageId == 0;
                 }
             }
             else
             {
-                response = new AliceResponse(aliceRequest, $"Извините, я не поняла какой регион вы имеете в виду");
+                if (string.IsNullOrWhiteSpace(aliceRequest?.Request.Command))
+                {
+                    response = new AliceResponse(aliceRequest,
+                        $"Этот навык подскажет название региона России по его коду на автомобильном номере. Для использования спросите меня про код региона, например \"Чей регион 198?\"");
+                }
+#pragma warning disable IDE0045 // Convert to conditional expression
+                else if (aliceRequest?.Request.Command.ToLowerInvariant() == "помощь")
+                {
+                    response = new AliceResponse(aliceRequest,
+                        $"Чтобы узнать к какому региону относится код, спросите меня, например \"Что за регион 777?\" или \"Какой регион 69?\"");
+                }
+                else if (aliceRequest?.Request.Command.ToLowerInvariant() == "что ты умеешь")
+                {
+                    response = new AliceResponse(aliceRequest,
+                        $"Я могу подсказать название региона России по его коду на автомобильном номере. Спросите меня, например \"Что за регион 777?\" или \"Какой регион 69?\"");
+                }
+                else
+                {
+                    response = new AliceResponse(aliceRequest, $"Извините, я не поняла какой регион вы имеете в виду");
+                }
+#pragma warning restore IDE0045 // Convert to conditional expression
             }
 
             return response;
