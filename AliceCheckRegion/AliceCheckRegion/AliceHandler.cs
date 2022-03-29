@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace AliceCheckRegion
     {
         public async Task<AliceResponse> FunctionHandler(RegionsAliceRequest aliceRequest)
         {
+            Console.WriteLine($"REQUEST: {aliceRequest.Request.Command}\n");
             AliceResponse response;
             if (aliceRequest?.Request?.Nlu?.Intents?.CheckRegion?.Slots?.Region != null)
             {
@@ -68,6 +70,8 @@ namespace AliceCheckRegion
                 }
 #pragma warning restore IDE0045 // Convert to conditional expression
             }
+
+            Console.WriteLine($"RESPONSE: {response.Response.Text}\n");
 
             return response;
         }
