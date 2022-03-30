@@ -12,7 +12,7 @@ namespace AliceCheckRegion
     {
         public async Task<AliceResponse> FunctionHandler(RegionsAliceRequest aliceRequest)
         {
-            Console.WriteLine($"REQUEST: {aliceRequest.Request.Command}\n");
+            LogMessage($"REQUEST: {aliceRequest.Request.Command}\n", aliceRequest);
             AliceResponse response;
             if (aliceRequest?.Request?.Nlu?.Intents?.CheckRegion?.Slots?.Region != null)
             {
@@ -71,7 +71,7 @@ namespace AliceCheckRegion
 #pragma warning restore IDE0045 // Convert to conditional expression
             }
 
-            Console.WriteLine($"RESPONSE: {response.Response.Text}\n");
+            LogMessage($"RESPONSE: {response.Response.Text}\n", aliceRequest!);
 
             return response;
         }
@@ -85,6 +85,14 @@ namespace AliceCheckRegion
             }
 
             return regions.FirstOrDefault(r => r.Code == stringRegion)?.Region;
+        }
+
+        private static void LogMessage(string message, RegionsAliceRequest aliceRequest)
+        {
+            if (aliceRequest?.Request?.Command.ToLowerInvariant() != "ping")
+            {
+                Console.WriteLine(message);
+            }
         }
     }
 }
