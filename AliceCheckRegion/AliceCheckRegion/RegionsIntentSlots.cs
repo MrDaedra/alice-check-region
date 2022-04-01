@@ -13,5 +13,9 @@ namespace AliceCheckRegion
         [JsonPropertyName("region")]
         [JsonConverter(typeof(AliceEntityModelConverter))]
         public AliceEntityModel? Region { get; set; }
+
+        [JsonPropertyName("zeroPrefix")]
+        [JsonConverter(typeof(AliceEntityModelConverter))]
+        public AliceEntityModel? ZeroPrefix { get; set; }
     }
 }

@@ -16,10 +16,12 @@ namespace AliceCheckRegion
             AliceResponse response;
             if (aliceRequest?.Request?.Nlu?.Intents?.CheckRegion?.Slots?.Region != null)
             {
-                double region = ((AliceEntityNumberModel)(aliceRequest.Request.Nlu.Intents.CheckRegion.Slots.Region!)).Value;
+                var model = aliceRequest.Request.Nlu.Intents.CheckRegion;
+                double region = ((AliceEntityNumberModel)(model.Slots.Region!)).Value;
+                string requestedRegion = model.Slots.ZeroPrefix != null && region < 10 ? $"0{region}" : region.ToString();
                 if (region >= 1000 || region == 0)
                 {
-                    return new AliceResponse(aliceRequest, $"Региона с кодом {region} не существует");
+                    return new AliceResponse(aliceRequest, $"Региона с кодом {requestedRegion} не существует");
                 }
 
                 using FileStream fileStream = File.OpenRead("./regions.json");
@@ -31,7 +33,7 @@ namespace AliceCheckRegion
 
                 if (regionName != null)
                 {
-                    response = new AliceResponse(aliceRequest, $"Регион {region} - это {regionName}");
+                    response = new AliceResponse(aliceRequest, $"Регион {requestedRegion} - это {regionName}");
                     response.Response.EndSession = aliceRequest.Session.MessageId == 0;
                 }
                 else
@@ -40,7 +42,7 @@ namespace AliceCheckRegion
                     regionName = GetRegionName(baseRegion, regions);
 
                     response = regionName != null
-                        ? new AliceResponse(aliceRequest, $"Я не знаю точно, но думаю, что {region} - это {regionName}")
+                        ? new AliceResponse(aliceRequest, $"Я не знаю точно, но думаю, что {requestedRegion} - это {regionName}")
                         : new AliceResponse(aliceRequest, $"Я думаю, что региона с таким кодом не существует");
 
                     response.Response.EndSession = aliceRequest.Session.MessageId == 0;
